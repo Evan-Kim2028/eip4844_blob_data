@@ -9,3 +9,6 @@ To run the clickhouse queries, add `DATABASE_URL` to your environment variables 
 ```
 DATABASE_URL = "clickhouse+http://XXX_USERNAME_XXX:XXX_PASSWORD_XXX@clickhouse.analytics.production.platform.ethpandaops.io:443/default?protocol=https"
 ```
+
+### Getting Started
+There are example queries in jupyter notebooks using both sqlalchemy and the python clickhouse client.
