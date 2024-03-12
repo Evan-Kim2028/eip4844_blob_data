@@ -1,7 +1,9 @@
-### Getting Started
+### Blob Dashboard
+Dencun blob market analysis and dashboard powered by [Panel](https://panel.holoviz.org/) and [ethpandaops](https://docs.ethpandaops.io/xatu/Clickhouse/intro).
 
-1. Install virtual environment with uv `uv .venv -python 3.11`
-2. Install relevant drivers (todo, add a requirements txt)
+
+### Getting Started
+This repository uses [rye](https://rye-up.com/guide/) and Python 3.1.18. To get started, use `rye sync` to start the virtual environment and install dependencies. 
 
 
 ### Environment Variables for Clickhouse Login
