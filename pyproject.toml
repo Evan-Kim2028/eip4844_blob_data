@@ -12,6 +12,7 @@ dependencies = [
     "ipykernel>=6.29.3",
     "pyarrow>=15.0.1",
     "jupyter_bokeh>=4.0.0",
+    "notebook>=7.1.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
