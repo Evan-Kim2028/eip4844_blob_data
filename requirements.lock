@@ -8,6 +8,8 @@
 #   with-sources: false
 
 -e file:.
+asttokens==2.4.1
+    # via stack-data
 bleach==6.1.0
     # via panel
 bokeh==3.3.4
@@ -23,8 +25,16 @@ clickhouse-connect==0.7.2
 colorcet==3.1.0
     # via holoviews
     # via hvplot
+comm==0.2.1
+    # via ipykernel
 contourpy==1.2.0
     # via bokeh
+debugpy==1.8.1
+    # via ipykernel
+decorator==5.1.1
+    # via ipython
+executing==2.0.1
+    # via stack-data
 greenlet==3.0.3
     # via sqlalchemy
 holoviews==1.18.3
@@ -33,8 +43,19 @@ hvplot==0.9.2
     # via eip4844-blob-data
 idna==3.6
     # via requests
+ipykernel==6.29.3
+    # via eip4844-blob-data
+ipython==8.22.2
+    # via ipykernel
+jedi==0.19.1
+    # via ipython
 jinja2==3.1.3
     # via bokeh
+jupyter-client==8.6.1
+    # via ipykernel
+jupyter-core==5.7.2
+    # via ipykernel
+    # via jupyter-client
 linkify-it-py==2.0.3
     # via panel
 lz4==4.3.3
@@ -46,20 +67,27 @@ markdown-it-py==3.0.0
     # via panel
 markupsafe==2.1.5
     # via jinja2
+matplotlib-inline==0.1.6
+    # via ipykernel
+    # via ipython
 mdit-py-plugins==0.4.0
     # via panel
 mdurl==0.1.2
     # via markdown-it-py
+nest-asyncio==1.6.0
+    # via ipykernel
 numpy==1.26.4
     # via bokeh
     # via contourpy
     # via holoviews
     # via hvplot
     # via pandas
+    # via pyarrow
 packaging==24.0
     # via bokeh
     # via holoviews
     # via hvplot
+    # via ipykernel
 pandas==2.2.1
     # via bokeh
     # via holoviews
@@ -74,11 +102,30 @@ param==2.0.2
     # via hvplot
     # via panel
     # via pyviz-comms
+parso==0.8.3
+    # via jedi
+pexpect==4.9.0
+    # via ipython
 pillow==10.2.0
     # via bokeh
+platformdirs==4.2.0
+    # via jupyter-core
 polars==0.20.15
     # via eip4844-blob-data
+prompt-toolkit==3.0.43
+    # via ipython
+psutil==5.9.8
+    # via ipykernel
+ptyprocess==0.7.0
+    # via pexpect
+pure-eval==0.2.2
+    # via stack-data
+pyarrow==15.0.1
+    # via eip4844-blob-data
+pygments==2.17.2
+    # via ipython
 python-dateutil==2.9.0.post0
+    # via jupyter-client
     # via pandas
 pytz==2024.1
     # via clickhouse-connect
@@ -88,17 +135,32 @@ pyviz-comms==3.0.1
     # via panel
 pyyaml==6.0.1
     # via bokeh
+pyzmq==25.1.2
+    # via ipykernel
+    # via jupyter-client
 requests==2.31.0
     # via panel
 six==1.16.0
+    # via asttokens
     # via bleach
     # via python-dateutil
 sqlalchemy==2.0.28
     # via eip4844-blob-data
+stack-data==0.6.3
+    # via ipython
 tornado==6.4
     # via bokeh
+    # via ipykernel
+    # via jupyter-client
 tqdm==4.66.2
     # via panel
+traitlets==5.14.2
+    # via comm
+    # via ipykernel
+    # via ipython
+    # via jupyter-client
+    # via jupyter-core
+    # via matplotlib-inline
 typing-extensions==4.10.0
     # via panel
     # via sqlalchemy
@@ -109,6 +171,8 @@ uc-micro-py==1.0.3
 urllib3==2.2.1
     # via clickhouse-connect
     # via requests
+wcwidth==0.2.13
+    # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
 xyzservices==2023.10.1
