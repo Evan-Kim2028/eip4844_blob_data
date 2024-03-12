@@ -200,6 +200,7 @@ packaging==24.0
     # via jupyterlab
     # via jupyterlab-server
     # via nbconvert
+    # via plotly
 pandas==2.2.1
     # via bokeh
     # via holoviews
@@ -224,6 +225,8 @@ pillow==10.2.0
     # via bokeh
 platformdirs==4.2.0
     # via jupyter-core
+plotly==5.19.0
+    # via eip4844-blob-data
 polars==0.20.15
     # via eip4844-blob-data
 prometheus-client==0.20.0
@@ -295,6 +298,8 @@ sqlalchemy==2.0.28
     # via eip4844-blob-data
 stack-data==0.6.3
     # via ipython
+tenacity==8.2.3
+    # via plotly
 terminado==0.18.1
     # via jupyter-server
     # via jupyter-server-terminals
