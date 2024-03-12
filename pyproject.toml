@@ -2,7 +2,7 @@
 name = "eip4844-blob-data"
 version = "0.1.0"
 description = "Dencun blob market analysis and dashboard"
-authors = [{ name = "Evan K", email = "evan@primev.xyz" }]
+authors = [{ name = "Evan K", email = "ekcopersonal@gmail.com" }]
 dependencies = [
     "panel>=1.3.8",
     "polars>=0.20.15",
