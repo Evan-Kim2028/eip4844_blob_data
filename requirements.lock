@@ -35,6 +35,8 @@ bokeh==3.3.4
     # via hvplot
     # via jupyter-bokeh
     # via panel
+cachetools==5.3.3
+    # via google-auth
 certifi==2024.2.2
     # via clickhouse-connect
     # via httpcore
@@ -66,8 +68,32 @@ fastjsonschema==2.19.1
     # via nbformat
 fqdn==1.5.1
     # via jsonschema
+google-api-core==2.17.1
+    # via google-api-core
+    # via google-cloud-bigquery
+    # via google-cloud-core
+google-auth==2.28.2
+    # via google-api-core
+    # via google-cloud-bigquery
+    # via google-cloud-core
+google-cloud-bigquery==3.19.0
+    # via eip4844-blob-data
+google-cloud-core==2.4.1
+    # via google-cloud-bigquery
+google-crc32c==1.5.0
+    # via google-resumable-media
+google-resumable-media==2.7.0
+    # via google-cloud-bigquery
+googleapis-common-protos==1.63.0
+    # via google-api-core
+    # via grpcio-status
 greenlet==3.0.3
     # via sqlalchemy
+grpcio==1.62.1
+    # via google-api-core
+    # via grpcio-status
+grpcio-status==1.62.1
+    # via google-api-core
 h11==0.14.0
     # via httpcore
 holoviews==1.18.3
@@ -193,6 +219,7 @@ overrides==7.7.0
     # via jupyter-server
 packaging==24.0
     # via bokeh
+    # via google-cloud-bigquery
     # via holoviews
     # via hvplot
     # via ipykernel
@@ -233,6 +260,10 @@ prometheus-client==0.20.0
     # via jupyter-server
 prompt-toolkit==3.0.43
     # via ipython
+protobuf==4.25.3
+    # via google-api-core
+    # via googleapis-common-protos
+    # via grpcio-status
 psutil==5.9.8
     # via ipykernel
 ptyprocess==0.7.0
@@ -242,6 +273,11 @@ pure-eval==0.2.2
     # via stack-data
 pyarrow==15.0.1
     # via eip4844-blob-data
+pyasn1==0.5.1
+    # via pyasn1-modules
+    # via rsa
+pyasn1-modules==0.3.0
+    # via google-auth
 pycparser==2.21
     # via cffi
 pygments==2.17.2
@@ -249,6 +285,7 @@ pygments==2.17.2
     # via nbconvert
 python-dateutil==2.9.0.post0
     # via arrow
+    # via google-cloud-bigquery
     # via jupyter-client
     # via pandas
 python-json-logger==2.0.7
@@ -271,6 +308,8 @@ referencing==0.33.0
     # via jsonschema-specifications
     # via jupyter-events
 requests==2.31.0
+    # via google-api-core
+    # via google-cloud-bigquery
     # via jupyterlab-server
     # via panel
 rfc3339-validator==0.1.4
@@ -282,6 +321,8 @@ rfc3986-validator==0.1.1
 rpds-py==0.18.0
     # via jsonschema
     # via referencing
+rsa==4.9
+    # via google-auth
 send2trash==1.8.2
     # via jupyter-server
 six==1.16.0
