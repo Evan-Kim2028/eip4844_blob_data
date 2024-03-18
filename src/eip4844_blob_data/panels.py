@@ -18,7 +18,7 @@ class Panels:
         blob_prop_df: pl.DataFrame = pl.from_pandas(blob_propagation_query)
 
         # make the panel
-        blob_prop_panel = (
+        return (
             blob_prop_df.group_by("slot")
             .agg(
                 pl.col("slot_start_date_time").first(),
@@ -43,12 +43,6 @@ class Panels:
                 line_width=2,
                 alpha=0.8,
             )
-        )
-
-        return pn.Column(
-            "# Mainnet Blob Sidecar Propagation Time",
-            blob_prop_panel.opts(axiswise=True),
-            sizing_mode="stretch_width",
         )
 
     def blob_in_mempool(self):
