@@ -10,7 +10,7 @@ pn.extension("plotly", template="material", sizing_mode="stretch_width")
 class Panels:
     clickhouse_queries = Queries()
 
-    def blob_propagation(self):
+    def blob_propagation(self) -> pn.Column:
         # make the query
         blob_propagation_query = self.clickhouse_queries.blob_propagation(
             time="7", network="mainnet"
@@ -18,7 +18,7 @@ class Panels:
         blob_prop_df: pl.DataFrame = pl.from_pandas(blob_propagation_query)
 
         # make the panel
-        return (
+        chart = (
             blob_prop_df.group_by("slot")
             .agg(
                 pl.col("slot_start_date_time").first(),
@@ -45,7 +45,15 @@ class Panels:
             )
         )
 
-    def blob_in_mempool(self):
+        return pn.Column(
+            "# Blob Propagation",
+            "Shows the time it takes for a blob to be propagated to the network from the time the blob event is picked up by Xatu compared to the slot start time",
+            chart.opts(shared_axes=False),
+            width=900,
+            height=600,
+        )
+
+    def blob_in_mempool(self) -> pn.Column:
         mempool_type3 = self.clickhouse_queries.mempool_transaction(
             "blobs", 7, "mainnet", 3)
 
@@ -79,7 +87,7 @@ class Panels:
             )
         )
 
-        return blob_mempool.sort(
+        chart = blob_mempool.sort(
             by="blob_time_in_mempool", descending=False
         ).plot.line(
             x="slot_start_date_time",
@@ -87,4 +95,12 @@ class Panels:
             title="Blob Censorship",
             xlabel="Date",
             ylabel="# of blocks",
+        )
+
+        return pn.Column(
+            "# Blob Time in Mempool",
+            "Shows the amount of time (in blocks) that a blob stays in the mempool before being included in the beacon chain",
+            chart.opts(shared_axes=False),
+            width=900,
+            height=600,
         )
