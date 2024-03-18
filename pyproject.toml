@@ -14,6 +14,7 @@ dependencies = [
     "plotly>=5.19.0",
     "bigframes>=0.24.0",
     "ethpandaops_python @ git+https://github.com/Evan-Kim2028/ethpandaops_python",
+    "asyncify>=0.10.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
