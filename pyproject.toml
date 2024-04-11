@@ -16,6 +16,7 @@ dependencies = [
     "ethpandaops_python @ git+https://github.com/Evan-Kim2028/ethpandaops_python",
     "asyncify>=0.10.0",
     "python-dotenv>=1.0.1",
+    "nest_asyncio>=1.6.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
