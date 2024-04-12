@@ -8,7 +8,7 @@
 #   with-sources: false
 
 -e file:.
-aiohttp==3.9.3
+aiohttp==3.9.4
     # via gcsfs
 aiosignal==1.3.1
     # via aiohttp
@@ -29,7 +29,7 @@ async-lru==2.0.4
     # via jupyterlab
 asyncify==0.10.0
     # via eip4844-blob-data
-atpublic==4.0
+atpublic==4.1.0
     # via ibis-framework
 attrs==23.2.0
     # via aiohttp
@@ -42,12 +42,12 @@ beautifulsoup4==4.12.3
     # via nbconvert
 bidict==0.23.1
     # via ibis-framework
-bigframes==0.25.0
+bigframes==1.1.0
     # via eip4844-blob-data
 bleach==6.1.0
     # via nbconvert
     # via panel
-bokeh==3.3.4
+bokeh==3.4.1
     # via hvplot
     # via jupyter-bokeh
     # via panel
@@ -70,7 +70,7 @@ click==8.1.7
     # via fiona
 click-plugins==1.1.1
     # via fiona
-clickhouse-connect==0.7.3
+clickhouse-connect==0.7.7
     # via ethpandaops-python
 cligj==0.7.2
     # via fiona
@@ -79,10 +79,10 @@ cloudpickle==3.0.0
 colorcet==3.1.0
     # via holoviews
     # via hvplot
-comm==0.2.1
+comm==0.2.2
     # via ipykernel
     # via ipywidgets
-contourpy==1.2.0
+contourpy==1.2.1
     # via bokeh
     # via matplotlib
 cycler==0.12.1
@@ -105,23 +105,23 @@ fastjsonschema==2.19.1
     # via nbformat
 fiona==1.9.6
     # via geopandas
-fonttools==4.50.0
+fonttools==4.51.0
     # via matplotlib
 fqdn==1.5.1
     # via jsonschema
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
-fsspec==2024.2.0
+fsspec==2024.3.1
     # via bigframes
     # via gcsfs
 funkify==0.4.5
     # via asyncify
-gcsfs==2024.2.0
+gcsfs==2024.3.1
     # via bigframes
 geopandas==0.14.3
     # via bigframes
-google-api-core==2.17.1
+google-api-core==2.18.0
     # via google-api-core
     # via google-cloud-bigquery
     # via google-cloud-bigquery-connection
@@ -131,7 +131,7 @@ google-api-core==2.17.1
     # via google-cloud-iam
     # via google-cloud-resource-manager
     # via google-cloud-storage
-google-auth==2.28.2
+google-auth==2.29.0
     # via bigframes
     # via gcsfs
     # via google-api-core
@@ -147,7 +147,7 @@ google-auth==2.28.2
 google-auth-oauthlib==1.2.0
     # via gcsfs
     # via pydata-google-auth
-google-cloud-bigquery==3.19.0
+google-cloud-bigquery==3.20.1
     # via bigframes
     # via google-cloud-bigquery
     # via ibis-framework
@@ -165,7 +165,7 @@ google-cloud-iam==2.14.3
     # via bigframes
 google-cloud-resource-manager==1.12.3
     # via bigframes
-google-cloud-storage==2.15.0
+google-cloud-storage==2.16.0
     # via bigframes
     # via gcsfs
 google-crc32c==1.5.0
@@ -196,7 +196,7 @@ h11==0.14.0
     # via httpcore
 holoviews==1.18.3
     # via hvplot
-httpcore==1.0.4
+httpcore==1.0.5
     # via httpx
 httpx==0.27.0
     # via jupyterlab
@@ -204,19 +204,22 @@ humanize==4.9.0
     # via bigframes
 hvplot==0.9.2
     # via eip4844-blob-data
+hypersync==0.5.7
+    # via ethpandaops-python
 ibis-framework==8.0.0
     # via bigframes
     # via ibis-framework
-idna==3.6
+idna==3.7
     # via anyio
     # via httpx
     # via jsonschema
     # via requests
     # via yarl
-ipykernel==6.29.3
+ipykernel==6.29.4
     # via eip4844-blob-data
+    # via ethpandaops-python
     # via jupyterlab
-ipython==8.22.2
+ipython==8.23.0
     # via ipykernel
     # via ipywidgets
 ipywidgets==8.1.2
@@ -232,9 +235,9 @@ jinja2==3.1.3
     # via jupyterlab
     # via jupyterlab-server
     # via nbconvert
-joblib==1.3.2
+joblib==1.4.0
     # via scikit-learn
-json5==0.9.22
+json5==0.9.24
     # via jupyterlab-server
 jsonpointer==2.4
     # via jsonschema
@@ -244,7 +247,7 @@ jsonschema==4.21.1
     # via nbformat
 jsonschema-specifications==2023.12.1
     # via jsonschema
-jupyter-bokeh==4.0.0
+jupyter-bokeh==4.0.1
     # via eip4844-blob-data
 jupyter-client==8.6.1
     # via ipykernel
@@ -258,11 +261,11 @@ jupyter-core==5.7.2
     # via nbclient
     # via nbconvert
     # via nbformat
-jupyter-events==0.9.1
+jupyter-events==0.10.0
     # via jupyter-server
-jupyter-lsp==2.2.4
+jupyter-lsp==2.2.5
     # via jupyterlab
-jupyter-server==2.13.0
+jupyter-server==2.14.0
     # via jupyter-lsp
     # via jupyterlab
     # via jupyterlab-server
@@ -270,11 +273,11 @@ jupyter-server==2.13.0
     # via notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.1.4
+jupyterlab==4.1.6
     # via notebook
 jupyterlab-pygments==0.3.0
     # via nbconvert
-jupyterlab-server==2.25.4
+jupyterlab-server==2.26.0
     # via jupyterlab
     # via notebook
 jupyterlab-widgets==3.0.10
@@ -285,7 +288,7 @@ linkify-it-py==2.0.3
     # via panel
 lz4==4.3.3
     # via clickhouse-connect
-markdown==3.5.2
+markdown==3.6
     # via panel
 markdown-it-py==3.0.0
     # via mdit-py-plugins
@@ -294,7 +297,7 @@ markdown-it-py==3.0.0
 markupsafe==2.1.5
     # via jinja2
     # via nbconvert
-matplotlib==3.8.3
+matplotlib==3.8.4
     # via bigframes
 matplotlib-inline==0.1.6
     # via ipykernel
@@ -310,17 +313,19 @@ multidict==6.0.5
     # via yarl
 multipledispatch==1.0.0
     # via ibis-framework
-nbclient==0.9.1
+nbclient==0.10.0
     # via nbconvert
-nbconvert==7.16.2
+nbconvert==7.16.3
     # via jupyter-server
-nbformat==5.10.2
+nbformat==5.10.4
     # via jupyter-server
     # via nbclient
     # via nbconvert
 nest-asyncio==1.6.0
+    # via eip4844-blob-data
+    # via ethpandaops-python
     # via ipykernel
-notebook==7.1.1
+notebook==7.1.2
     # via eip4844-blob-data
 notebook-shim==0.2.4
     # via jupyterlab
@@ -356,10 +361,11 @@ packaging==24.0
     # via matplotlib
     # via nbconvert
     # via plotly
-pandas==2.1.3
+pandas==2.2.2
     # via bigframes
     # via bokeh
     # via db-dtypes
+    # via ethpandaops-python
     # via geopandas
     # via google-cloud-bigquery
     # via holoviews
@@ -368,35 +374,37 @@ pandas==2.1.3
     # via panel
 pandocfilters==1.5.1
     # via nbconvert
-panel==1.3.8
+panel==1.4.1
     # via eip4844-blob-data
     # via holoviews
     # via hvplot
-param==2.0.2
+param==2.1.0
     # via holoviews
     # via hvplot
     # via panel
     # via pyviz-comms
-parso==0.8.3
+parso==0.8.4
     # via jedi
 parsy==2.1
     # via ibis-framework
 pexpect==4.9.0
     # via ipython
-pillow==10.2.0
+pillow==10.3.0
     # via bokeh
     # via matplotlib
 platformdirs==4.2.0
     # via jupyter-core
-plotly==5.19.0
+plotly==5.20.0
     # via eip4844-blob-data
-polars==0.20.15
+polars==0.20.19
     # via eip4844-blob-data
+    # via ethpandaops-python
 prometheus-client==0.20.0
     # via jupyter-server
 prompt-toolkit==3.0.43
     # via ipython
 proto-plus==1.23.0
+    # via google-api-core
     # via google-cloud-bigquery-connection
     # via google-cloud-bigquery-storage
     # via google-cloud-functions
@@ -420,19 +428,21 @@ ptyprocess==0.7.0
     # via terminado
 pure-eval==0.2.2
     # via stack-data
-pyarrow==15.0.1
+pyarrow==15.0.2
+    # via bigframes
     # via db-dtypes
     # via eip4844-blob-data
+    # via ethpandaops-python
     # via google-cloud-bigquery
     # via ibis-framework
 pyarrow-hotfix==0.6
     # via ibis-framework
-pyasn1==0.5.1
+pyasn1==0.6.0
     # via pyasn1-modules
     # via rsa
-pyasn1-modules==0.3.0
+pyasn1-modules==0.4.0
     # via google-auth
-pycparser==2.21
+pycparser==2.22
     # via cffi
 pydata-google-auth==1.8.2
     # via bigframes
@@ -453,6 +463,7 @@ python-dateutil==2.9.0.post0
     # via matplotlib
     # via pandas
 python-dotenv==1.0.1
+    # via eip4844-blob-data
     # via ethpandaops-python
 python-json-logger==2.0.7
     # via jupyter-events
@@ -460,7 +471,7 @@ pytz==2024.1
     # via clickhouse-connect
     # via ibis-framework
     # via pandas
-pyviz-comms==3.0.1
+pyviz-comms==3.0.2
     # via holoviews
     # via panel
 pyyaml==6.0.1
@@ -470,7 +481,7 @@ pyzmq==25.1.2
     # via ipykernel
     # via jupyter-client
     # via jupyter-server
-referencing==0.33.0
+referencing==0.34.0
     # via jsonschema
     # via jsonschema-specifications
     # via jupyter-events
@@ -483,7 +494,7 @@ requests==2.31.0
     # via jupyterlab-server
     # via panel
     # via requests-oauthlib
-requests-oauthlib==1.4.0
+requests-oauthlib==2.0.0
     # via google-auth-oauthlib
 rfc3339-validator==0.1.4
     # via jsonschema
@@ -498,11 +509,11 @@ rpds-py==0.18.0
     # via referencing
 rsa==4.9
     # via google-auth
-scikit-learn==1.4.1.post1
+scikit-learn==1.4.2
     # via bigframes
-scipy==1.12.0
+scipy==1.13.0
     # via scikit-learn
-send2trash==1.8.2
+send2trash==1.8.3
     # via jupyter-server
 shapely==2.0.3
     # via geopandas
@@ -517,13 +528,15 @@ sniffio==1.3.1
     # via httpx
 soupsieve==2.5
     # via beautifulsoup4
-sqlalchemy==2.0.28
+sqlalchemy==2.0.29
     # via bigframes
 sqlglot==20.11.0
     # via bigframes
     # via ibis-framework
 stack-data==0.6.3
     # via ipython
+strenum==0.4.15
+    # via hypersync
 tabulate==0.9.0
     # via bigframes
 tenacity==8.2.3
@@ -531,7 +544,7 @@ tenacity==8.2.3
 terminado==0.18.1
     # via jupyter-server
     # via jupyter-server-terminals
-threadpoolctl==3.3.0
+threadpoolctl==3.4.0
     # via scikit-learn
 tinycss2==1.2.1
     # via nbconvert
@@ -561,10 +574,11 @@ traitlets==5.14.2
     # via nbclient
     # via nbconvert
     # via nbformat
-types-python-dateutil==2.8.19.20240311
+types-python-dateutil==2.9.0.20240316
     # via arrow
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via ibis-framework
+    # via ipython
     # via panel
     # via sqlalchemy
     # via xtyping
@@ -590,12 +604,12 @@ widgetsnbextension==4.0.10
     # via ipywidgets
 xtyping==0.8.2
     # via asyncify
-xyzservices==2023.10.1
+xyzservices==2024.4.0
     # via bokeh
     # via panel
 yarl==1.9.4
     # via aiohttp
 zstandard==0.22.0
     # via clickhouse-connect
-setuptools==69.2.0
+setuptools==69.4.0
     # via pydata-google-auth
