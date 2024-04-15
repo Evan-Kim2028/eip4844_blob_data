@@ -70,7 +70,7 @@ click==8.1.7
     # via fiona
 click-plugins==1.1.1
     # via fiona
-clickhouse-connect==0.7.7
+clickhouse-connect==0.7.8
     # via ethpandaops-python
 cligj==0.7.2
     # via fiona
@@ -237,7 +237,7 @@ jinja2==3.1.3
     # via nbconvert
 joblib==1.4.0
     # via scikit-learn
-json5==0.9.24
+json5==0.9.25
     # via jupyterlab-server
 jsonpointer==2.4
     # via jsonschema
@@ -299,7 +299,7 @@ markupsafe==2.1.5
     # via nbconvert
 matplotlib==3.8.4
     # via bigframes
-matplotlib-inline==0.1.6
+matplotlib-inline==0.1.7
     # via ipykernel
     # via ipython
 mdit-py-plugins==0.4.0
@@ -396,7 +396,7 @@ platformdirs==4.2.0
     # via jupyter-core
 plotly==5.20.0
     # via eip4844-blob-data
-polars==0.20.19
+polars==0.20.21
     # via eip4844-blob-data
     # via ethpandaops-python
 prometheus-client==0.20.0
@@ -477,7 +477,7 @@ pyviz-comms==3.0.2
 pyyaml==6.0.1
     # via bokeh
     # via jupyter-events
-pyzmq==25.1.2
+pyzmq==26.0.0
     # via ipykernel
     # via jupyter-client
     # via jupyter-server
@@ -611,5 +611,5 @@ yarl==1.9.4
     # via aiohttp
 zstandard==0.22.0
     # via clickhouse-connect
-setuptools==69.4.0
+setuptools==69.5.1
     # via pydata-google-auth
