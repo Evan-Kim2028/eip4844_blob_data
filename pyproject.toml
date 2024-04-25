@@ -13,7 +13,7 @@ dependencies = [
     "notebook>=7.1.1",
     "plotly>=5.19.0",
     "bigframes>=0.24.0",
-    "ethpandaops_python @ git+https://github.com/Evan-Kim2028/ethpandaops_python",
+    "ethpandaops_python @ git+https://github.com/primevprotocol/ethpandaops_python",
     "asyncify>=0.10.0",
     "python-dotenv>=1.0.1",
     "nest_asyncio>=1.6.0",
