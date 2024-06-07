@@ -3,3 +3,6 @@
 unfinished/*
 analysis/blob_mempool/*.parquet
 analysis/block_propagation/*.parquet
+panel/data/*
+data/*
+old/*
