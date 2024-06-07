@@ -96,6 +96,10 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
             }
         )
         .drop_nulls()
+        # filter for mainnet data only, there seems to be a bug that shows holesky data as well (6/7/24)
+        .filter(pl.col('meta_network_name') == 'mainnet')
+        # adding filter because outliers mess up the graph
+        .filter(pl.col('slot_inclusion_rate') < 200)
     )
 
 
@@ -169,6 +173,7 @@ def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataF
         .select(
             "block_number",
             "max_priority_fee_per_gas_gwei",
+            "meta_network_name",
             "effective_gas_price_gwei",
             "priority_fee_bid_percent_premium",
             "slot_inclusion_rate",
@@ -196,6 +201,8 @@ def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataF
             )
         )
         .drop_nulls()
+        # filter for mainnet data only, there seems to be a bug that shows holesky data as well (6/7/24)
+        .filter(pl.col('meta_network_name') == 'mainnet')
     )
 
     return joined_df
@@ -214,4 +221,6 @@ def create_bid_premium_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     )
         .sort(by="slot_inclusion_rate")
         .drop_nulls()
+        # adding filter because outliers mess up the graph
+        .filter(pl.col('slot_inclusion_rate') < 50)
     )
