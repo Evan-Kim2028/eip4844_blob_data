@@ -1,4 +1,5 @@
 import polars as pl
+import panel as pn
 
 
 def create_slot_inclusion_line_chart(df: pl.DataFrame, sequencers: list[str]):
@@ -68,3 +69,14 @@ def create_priority_fee_chart(
     )
 
     return priority_fee_premium_chart * line_chart_bid_premium
+
+
+def get_slot_inclusion_table(df: pl.DataFrame, sequencers: list[str]):
+    slot_df = (df.filter(pl.col("sequencer_names").is_in(sequencers)).sort(
+        by='slot_inclusion_rate', descending=True)
+        .select('slot', 'slot_time', 'hash', 'fill_percentage', 'submission_count', 'slot_inclusion_rate', 'sequencer_names')
+        .unique()
+    )
+    return pn.widgets.Tabulator(
+        slot_df.to_pandas(), layout='fit_data'
+    )
