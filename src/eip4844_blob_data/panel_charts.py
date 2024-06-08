@@ -79,6 +79,6 @@ def get_slot_inclusion_table(df: pl.DataFrame, sequencers: list[str]):
     )
     return pn.widgets.Tabulator(
         slot_df.to_pandas(),
-        # layout='fit_data'
-        layout='fit_columns'
+        layout='fit_data'
+        # layout='fit_columns'
     )
