@@ -5,13 +5,13 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
     """
     `slot_inclusion` returns the slot, slot inclusion time, and slot start time for the last `time` days.
 
-    This is the main query that all the other queries rely on for calculations.
+    This query calculates slot inclusion data - such as average slot inclusion time and number of blob submissions
 
     Returns a pl.DataFrame
     """
 
     blob_mempool_table: pl.DataFrame = (
-        cached_data['mempool_df']
+        cached_data["mempool_df"]
         .rename({"blob_hashes": "versioned_hash"})
         .sort(by="event_date_time")
         .group_by(
@@ -40,9 +40,9 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
                 pl.col("gas_tip_cap").mean(),
                 pl.col("gas_fee_cap").mean(),
                 # tx info
-                pl.col('hash').last(),
-                pl.col('from').last(),
-                pl.col('to').last(),
+                pl.col("hash").last(),
+                pl.col("from").last(),
+                pl.col("to").last(),
             ]
         )
         .with_columns(
@@ -52,7 +52,7 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
         .sort(by="submission_count")
     )
 
-    canonical_sidecar_df: pl.DataFrame = cached_data['canonical_beacon_blob_sidecar_df'].drop(
+    canonical_sidecar_df: pl.DataFrame = cached_data["canonical_beacon_blob_sidecar_df"].drop(
         "blob_index")
 
     return (
@@ -97,113 +97,105 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
         )
         .drop_nulls()
         # filter for mainnet data only, there seems to be a bug that shows holesky data as well (6/7/24)
-        .filter(pl.col('meta_network_name') == 'mainnet')
+        .filter(pl.col("meta_network_name") == "mainnet")
         # adding filter because outliers mess up the graph
-        .filter(pl.col('slot_inclusion_rate') < 200)
+        .filter(pl.col("slot_inclusion_rate") < 200)
     )
 
 
-def create_slot_count_breakdown_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
-    """
-    ! - CURRENTLY NOT USED AS OF 6/8/24
-    breakdown slot_inclusion_rate into three groups:
-    1_slot, 2 slot, 3_plus_slots
-    """
-    slot_inclusion_df: pl.DataFrame = create_slot_inclusion_df(cached_data)
+# def create_slot_count_breakdown_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
+#     """
+#     ! - CURRENTLY NOT USED AS OF 6/8/24
+#     breakdown slot_inclusion_rate into three groups:
+#     1_slot, 2 slot, 3_plus_slots
+#     """
+#     slot_inclusion_df: pl.DataFrame = create_slot_inclusion_df(cached_data)
 
-    return (
-        slot_inclusion_df
-        .select("hash", "slot_inclusion_rate")
-        .unique()
-        .with_columns(
-            pl.when(pl.col("slot_inclusion_rate") == 1)
-            .then(True)
-            .otherwise(False)
-            .alias("1_slot"),
-            pl.when(pl.col("slot_inclusion_rate") == 2)
-            .then(True)
-            .otherwise(False)
-            .alias("2_slots"),
-            pl.when(pl.col("slot_inclusion_rate") >= 3)
-            .then(True)
-            .otherwise(False)
-            .alias("3_plus_slots"),
-        )
-        .with_columns(
-            pl.col("1_slot").sum(),
-            pl.col("2_slots").sum(),
-            pl.col("3_plus_slots").sum(),
-        )
-        .select("1_slot", "2_slots", "3_plus_slots")[0]
-    )
+#     return (
+#         slot_inclusion_df
+#         .select("hash", "slot_inclusion_rate")
+#         .unique()
+#         .with_columns(
+#             pl.when(pl.col("slot_inclusion_rate") == 1)
+#             .then(True)
+#             .otherwise(False)
+#             .alias("1_slot"),
+#             pl.when(pl.col("slot_inclusion_rate") == 2)
+#             .then(True)
+#             .otherwise(False)
+#             .alias("2_slots"),
+#             pl.when(pl.col("slot_inclusion_rate") >= 3)
+#             .then(True)
+#             .otherwise(False)
+#             .alias("3_plus_slots"),
+#         )
+#         .with_columns(
+#             pl.col("1_slot").sum(),
+#             pl.col("2_slots").sum(),
+#             pl.col("3_plus_slots").sum(),
+#         )
+#         .select("1_slot", "2_slots", "3_plus_slots")[0]
+#     )
 
 
 def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     """
-    join slot inclusion transformation with tx data to get gas bidding info
+    This function calculates gas bidding data for blob
     """
     slot_inclusion_df: pl.DataFrame = create_slot_inclusion_df(cached_data)
+
+    # print(f"slot inclusion df columns: {slot_inclusion_df.columns}")
+    # slot inclusion df columns: ["versioned_hash", "nonce", "event_date_time_min", "event_date_time_max", "blob_hashes_length",
+    # "blob_sidecars_size", "fill_percentage", "blob_gas", "blob_gas_fee_cap", "gas_price", "gas_tip_cap",
+    # "gas_fee_cap", "hash", "from", "to", "submission_count", "slot", "slot_time", "block_root",
+    # "kzg_commitment", "meta_network_name", "blob_size", "blob_empty_size", "beacon_inclusion_time", "slot_inclusion_rate",
+    # "slot_inclusion_rate_50_blob_avg", "2_slot_target_inclusion_rate"]
 
     joined_df = (
         slot_inclusion_df
         .join(
-            cached_data['txs'], on="hash", how="left"
-        ).with_columns(
-            (pl.col("effective_gas_price") / 10**9)
-            .round(3)
-            .alias(
-                "effective_gas_price_gwei"
-            ),  # gas price in gwei that was paid, including priority fee
-            (pl.col("max_fee_per_gas") / 10**9)
-            .round(3)
-            .alias(
-                "max_fee_per_gas_gwei"
-            ),  # max gas price in gwei that rollup is willing to pay
-            (pl.col("max_priority_fee_per_gas") / 10**9).round(3)
-            # priority gas fee in gwei,
-            .alias("max_priority_fee_per_gas_gwei"),
-        ).with_columns(
-            (
-                (pl.col("max_priority_fee_per_gas_gwei") /
-                    pl.col("effective_gas_price_gwei"))
-                * 100
-            )
-            .round(3)
-            .alias("priority_fee_bid_percent_premium")
+            cached_data["txs"], on="hash", how="left"
+        )
+        .with_columns(
+            (pl.col("base_fee_per_gas") * pl.col("gas_used")).alias("base_tx_fee_eth"),
+            (pl.col("effective_gas_price") - pl.col("base_fee_per_gas")).alias(
+                "priority_fee_gas"
+            ),
+            ((pl.col("max_priority_fee_per_gas") / pl.col("effective_gas_price")
+              ).round(3)).alias("priority_fee_bid_percent_premium")
+        )
+        .with_columns(
+            # have to perform priority fee calculation in this column
+            (((pl.col("effective_gas_price") - pl.col("base_fee_per_gas"))
+             * pl.col("gas_used")) / 10**18).alias("priority_tx_fee_eth"),
+            # unit calculations for gwei and eth values
+            (pl.col("base_tx_fee_eth") / 10**18).alias("base_tx_fee_eth"),
+            (pl.col("priority_fee_gas") / 10**9).alias("priority_fee_gas"),
+            (pl.col("base_fee_per_gas") / 10**9).alias("base_fee_per_gas")
+        )
+        .with_columns(
+            (pl.col("base_tx_fee_eth") + \
+             pl.col("priority_tx_fee_eth")).alias("total_tx_fee_eth"),
         )
         .select(
             "block_number",
-            "max_priority_fee_per_gas_gwei",
+            "extra_data",
+            "base_tx_fee_eth",
+            "priority_tx_fee_eth",
+            "total_tx_fee_eth",
+            "base_fee_per_gas",
+            "priority_fee_gas",
             "meta_network_name",
-            "effective_gas_price_gwei",
             "priority_fee_bid_percent_premium",
             "slot_inclusion_rate",
             "submission_count",
+            "hash"
         )
         .unique()
         .sort(by="block_number")
-        .with_columns(
-            (
-                # estimate min block gas by taking the gwei paid minus the priority fee
-                pl.col("effective_gas_price_gwei")
-                - pl.col("max_priority_fee_per_gas_gwei")
-            ).alias("min_block_gas_gwei")
-        )
-        .with_columns(
-            # calculate per tx gas fluctuations
-            pl.col("min_block_gas_gwei")
-            .diff()
-            .abs()
-            .alias("gas_fluctuation_gwei")
-        )
-        .with_columns(
-            (pl.col("gas_fluctuation_gwei") / pl.col("min_block_gas_gwei") * 100).alias(
-                "gas_fluctuation_percent"
-            )
-        )
         .drop_nulls()
         # filter for mainnet data only, there seems to be a bug that shows holesky data as well (6/7/24)
-        .filter(pl.col('meta_network_name') == 'mainnet')
+        .filter(pl.col("meta_network_name") == "mainnet")
     )
 
     return joined_df
@@ -223,5 +215,5 @@ def create_bid_premium_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
         .sort(by="slot_inclusion_rate")
         .drop_nulls()
         # adding filter because outliers mess up the graph
-        .filter(pl.col('slot_inclusion_rate') < 50)
+        .filter(pl.col("slot_inclusion_rate") < 50)
     )
