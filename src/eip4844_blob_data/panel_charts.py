@@ -22,7 +22,7 @@ def create_slot_inclusion_line_chart(df: pl.DataFrame, sequencers: list[str]):
             ylabel="Beacon Block Inclusion (block)",
             xlabel="Slot Date Time",
             title="Historical Slot Inclusion",
-            width=800,
+            width=900,
             height=375,
         )
     )
@@ -41,7 +41,7 @@ def create_priority_fee_chart(
         .plot.scatter(
             x="slot_inclusion_rate",
             y="priority_fee_bid_percent_premium",
-            width=800,
+            width=900,
             height=375,
             legend="top_left",
         )
@@ -69,15 +69,19 @@ def create_priority_fee_chart(
     return priority_fee_premium_chart * line_chart_bid_premium
 
 
+def fee_breakdown_line(df: pl.DataFrame, sequencers: list[str]):
+    fee_breakdown_line = (
+        df.filter(pl.col("sequencer_names").is_in(sequencers))
+        .plot.line(x='slot_time', y=['base_tx_fee_eth', 'priority_tx_fee_eth'], by='sequencer_names', width=900,
+                   height=375, xlabel='Time', ylabel='Fee Breakdown (in ETH)', title='Fee Breakdown')
+    )
+
+    return fee_breakdown_line.opts(axiswise=True)
+
+
 def get_slot_inclusion_table(df: pl.DataFrame, sequencers: list[str]):
     slot_df = (df.filter(pl.col("sequencer_names").is_in(sequencers)).sort(
         by='slot_inclusion_rate', descending=True)
-        #     .select(
-        #         'slot', 'block_number', 'slot_time', 'sequencer_names',
-        #         'hash', 'fill_percentage', 'submission_count', 'slot_inclusion_rate', 'blob_hashes_length',
-        #         'base_tx_fee_eth', 'priority_tx_fee_eth', 'base_fee_per_gas', 'priority_fee_gas', 'total_tx_fee_eth', 'priority_fee_bid_percent_premium'
-        # )
-        # .unique()
     )
     return pn.widgets.Tabulator(
         slot_df.to_pandas(),
