@@ -103,40 +103,6 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
     )
 
 
-# def create_slot_count_breakdown_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
-#     """
-#     ! - CURRENTLY NOT USED AS OF 6/8/24
-#     breakdown slot_inclusion_rate into three groups:
-#     1_slot, 2 slot, 3_plus_slots
-#     """
-#     slot_inclusion_df: pl.DataFrame = create_slot_inclusion_df(cached_data)
-
-#     return (
-#         slot_inclusion_df
-#         .select("hash", "slot_inclusion_rate")
-#         .unique()
-#         .with_columns(
-#             pl.when(pl.col("slot_inclusion_rate") == 1)
-#             .then(True)
-#             .otherwise(False)
-#             .alias("1_slot"),
-#             pl.when(pl.col("slot_inclusion_rate") == 2)
-#             .then(True)
-#             .otherwise(False)
-#             .alias("2_slots"),
-#             pl.when(pl.col("slot_inclusion_rate") >= 3)
-#             .then(True)
-#             .otherwise(False)
-#             .alias("3_plus_slots"),
-#         )
-#         .with_columns(
-#             pl.col("1_slot").sum(),
-#             pl.col("2_slots").sum(),
-#             pl.col("3_plus_slots").sum(),
-#         )
-#         .select("1_slot", "2_slots", "3_plus_slots")[0]
-#     )
-
 
 def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     """
@@ -189,7 +155,8 @@ def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataF
             "priority_fee_bid_percent_premium",
             "slot_inclusion_rate",
             "submission_count",
-            "hash"
+            "hash",
+            "from",
         )
         .unique()
         .sort(by="block_number")
@@ -206,7 +173,7 @@ def create_bid_premium_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     Groupby on slot inclusion rate to get median priority fee bid percent premium and mean effective gas price
     """
     slot_gas_bidding_df = create_slot_gas_bidding_df(cached_data)
-
+    
     return (slot_gas_bidding_df.group_by("slot_inclusion_rate")
             .agg(
         pl.col("priority_fee_bid_percent_premium").median(),

@@ -8,17 +8,15 @@ def create_slot_inclusion_line_chart(df: pl.DataFrame, sequencers: list[str]):
         .select(
             "slot_time",
             "slot_inclusion_rate",
-            "slot_inclusion_rate_50_blob_avg",
-            "2_slot_target_inclusion_rate",
             "submission_count",
             "sequencer_names",
         )
+        .with_columns(pl.lit(2).alias('2_slot_target_inclusion_rate'))
         .plot.line(
             x="slot_time",
             y=[
                 "slot_inclusion_rate",
-                # "slot_inclusion_rate_50_blob_avg",
-                "2_slot_target_inclusion_rate",
+                "2_slot_target_inclusion_rate"
             ],
             by="sequencer_names",
             ylabel="Beacon Block Inclusion (block)",
