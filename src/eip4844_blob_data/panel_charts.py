@@ -72,11 +72,15 @@ def create_priority_fee_chart(
 def get_slot_inclusion_table(df: pl.DataFrame, sequencers: list[str]):
     slot_df = (df.filter(pl.col("sequencer_names").is_in(sequencers)).sort(
         by='slot_inclusion_rate', descending=True)
-        .select('slot', 'slot_time', 'hash', 'fill_percentage', 'submission_count', 'slot_inclusion_rate', 'sequencer_names')
+        .select(
+            'slot', 'block_number', 'slot_time', 'sequencer_names',
+            'hash', 'fill_percentage', 'submission_count', 'slot_inclusion_rate', 'blob_hashes_length',
+            'base_tx_fee_eth', 'priority_tx_fee_eth', 'base_fee_per_gas', 'priority_fee_gas', 'total_tx_fee_eth', 'priority_fee_bid_percent_premium'
+    )
         .unique()
     )
     return pn.widgets.Tabulator(
         slot_df.to_pandas(),
-        layout='fit_data'
+        layout='fit_data_table'
         # layout='fit_columns'
     )
