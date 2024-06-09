@@ -62,7 +62,7 @@ def create_priority_fee_chart(
             y=["priority fee bid premium (%)"],
             ylabel="priority fee bid premium (%, gwei)",
             xlabel="slot inclusion rate",
-            title="priority fee bid premium effect on slot inclusion rate",
+            title="priority fee bid premium over base fee",
             color="g",
             legend="top_left",
         )
