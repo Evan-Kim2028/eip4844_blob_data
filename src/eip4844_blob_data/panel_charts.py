@@ -38,7 +38,7 @@ def create_priority_fee_chart(
     # priority fee scatter plot
     priority_fee_premium_chart = (
         slot_gas_bidding_df.filter(pl.col("sequencer_names").is_in(sequencers))
-        .filter(pl.col("slot_inclusion_rate") < 40)
+        .filter(pl.col("slot_inclusion_rate") < 100)
         .sort(by="slot_inclusion_rate")
         .plot.scatter(
             x="slot_inclusion_rate",
@@ -51,10 +51,10 @@ def create_priority_fee_chart(
 
     line_chart_bid_premium = (
         slot_gas_groupby_df.filter(pl.col("sequencer_names").is_in(sequencers))
+        .filter(pl.col("slot_inclusion_rate") < 100)
         .rename(
             {
-                "priority_fee_bid_percent_premium": "priority fee bid premium (%)",
-                "effective_gas_price_gwei": "block gas price (gwei)",
+                "priority_fee_bid_percent_premium": "priority fee bid premium (%)"
             }
         )
         .plot.line(
