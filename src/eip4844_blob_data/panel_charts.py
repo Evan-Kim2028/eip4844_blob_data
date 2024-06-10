@@ -1,9 +1,9 @@
 import polars as pl
 import panel as pn
+from eip4844_blob_data.polars_preprocess import create_blob_block_df, create_block_agg_df
+
 
 # start dashboard
-
-
 def start_interactive_panel(filtered_data_dict, sequencer_names_list):
     multi_select = pn.widgets.MultiSelect(
         name="Sequencers",
@@ -32,6 +32,43 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
         # need `slot_time` so that it doesn't share the same y-axis.
         shared_axes=False
     )
+
+    # NEW - 2 DF TRANSFORMATIONS + 2 CHARTS ADDED 6/10/24. TODO - REFACTOR OUT?
+    blob_block_df: pl.DataFrame = create_blob_block_df(
+        filtered_data_dict["slot_inclusion_df"])
+
+    block_agg_df = create_block_agg_df(blob_block_df)
+
+    # stacked line chart
+    fees_paid_line = block_agg_df.plot.line(
+        x='slot_time', y='total_tx_fees_per_block_eth', label='Blockspace Fees', alpha=0.75, color='red', ylabel='Total Tx Fees (in ETH)')
+    slot_inclusion_rate_scatter = block_agg_df.plot.scatter(
+        x='slot_time', y='avg_slot_inclusion_rate_per_block', label='slot inclusion rate', color='b', alpha=0.5, s=1, ylabel='slot inclusion')
+    base_gas_fee_line = block_agg_df.plot.line(x='slot_time', y='base_fee_per_gas', label='base fee per gas',
+                                               color='g', alpha=0.75, ylabel='base fee per gas', line_width=2, line_dash='dotted')
+    fees_inclusion_rate_chart = (
+        (fees_paid_line * slot_inclusion_rate_scatter * base_gas_fee_line).opts(
+            multi_y=True, show_legend=True, height=375, width=1200, xlabel='time', title='Fees Paid vs Slot Inclusion Rate')
+    )
+
+    # ! TODO - replace!
+    fee_total_breakdown_line = block_agg_df.with_columns([
+        pl.col('base_fees_per_block_eth').cum_sum().alias('base fee'),
+        pl.col('priority_fees_per_block_eth').cum_sum().alias('priority fee')
+    ]).sort(by='block_number').plot.line(
+        x='slot_time', y=['base fee', 'priority fee'], xlabel='time', ylabel='fees (in ETH)', title='Cumulative Fees (weekly)').opts(yaxis='right')
+
+    # # fee sequencer area chart ! Not ready, there's bugs here.
+    # fee_sequencer_pivot: pl.DataFrame = (
+    #     blob_block_df.pivot(index='slot_time', columns='sequencer_names', values='total_tx_fees_per_block_eth', aggregate_function='mean'))
+
+    # fee_sequencer_area_chart = (fee_sequencer_pivot.with_columns([
+    #     pl.col(column).cum_sum().alias(column) for column in fee_sequencer_pivot.columns if column != "slot_time"
+    # ]).fill_null(0).with_columns([
+    #     pl.col(column).cum_sum().alias(column) for column in fee_sequencer_pivot.columns if column != "slot_time"
+    # ]).plot.area(x='slot_time', y=[
+    #     column for column in fee_sequencer_pivot.columns if column != "slot_time"
+    # ], xlabel='time', ylabel='fees (in ETH)', title='Total Fees Paid (weekly)'))
 
     sequencer_macro_blob_table: pl.DataFrame = (
         filtered_data_dict['slot_inclusion_df'].drop_nulls().unique().group_by(
@@ -77,8 +114,9 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             multi_select,
             styles=dict(background="WhiteSmoke"),
         ),
-        pn.pane.Markdown(
-            """
+        pn.Row(
+            pn.pane.Markdown(
+                """
             ## 7 Day Historical Slot Inclusion
             When a transaction is resubmitted with updated gas parameters, the transaction hash changes. For example take this blob reference hash - 0x01c738cf37c911334c771f2295c060e5bd7d084f347e4334863336724934c59a. 
             On [etherscan](https://etherscan.io/tx/0x763d823c0f933c4d2eb84406b37aa2649753f2f563fa3ee6d27251c6a52a8d69) we can see that the transaction was replaced by the user. We can see on Ethernow that the transaction contains 
@@ -86,27 +124,16 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             
             We can measure the total time that a blob hash sat in the mempool by subtracting the original tx was first seen from the slot time, when it eventually is finalized on the beacon chain. 
             In this particular example, the total time that the blob sat in the mempool was not from 18:56:27 to 18:57:11 (4 slots), but really 18:54:29 to 18:57:11 (14 slots)
-            """
-        ),
-        pn.Row(
-            slot_inclusion_line_chart.opts(axiswise=True),
-            priority_fee_chart.opts(legend_position="left", show_legend=True),
-            styles=dict(background="WhiteSmoke"),
 
-        ),
-        pn.Row(
-            pn.pane.Markdown(
-                """
-            ## Slot Inclusion Rates
             **Slot Inclusion Rate** - The slot inclusion rate indicates the number of slots required for a blob to be included in the beacon chain, 
             with a higher rate signifying a longer inclusion time. The accompanying time-series chart tracks this metric from initial mempool 
             appearance to final beacon block inclusion. A 50 blob slot inclusion average is taken to smooth out the performance. 
             The target slot inclusion rate is 2. 
-                """
+            """
             ),
             pn.pane.Markdown(
                 """
-            ## EIP-1559 Priority Fee Premium Correlation with Slot Rates
+            ## EIP-1559 Priority fee proportion to base fee
             The scatterplot illustrates the relationship between the EIP-1559 priority fee bid premiums and slot inclusion rates. The scatterplot points
             are individual blob bid datapoints and the line is a median bid premium. A higher priority fee bid premium tends to coincide 
             with longer slot inclusion times. This unexpected twist underscores the value of efficient slot utilization. The data indicates a trend 
@@ -118,19 +145,39 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             styles=dict(background="WhiteSmoke")
         ),
         pn.Row(
+            slot_inclusion_line_chart.opts(axiswise=True),
+            priority_fee_chart.opts(legend_position="left", show_legend=True),
+            styles=dict(background="WhiteSmoke"),
+
+        ),
+
+        pn.Row(
             pn.pane.Markdown(
                 """
-                # Blob Transaction Data (Past 7 days):
-                
-                This table provides detailed information on various metrics related to traditional transaction hashes that carry blob hashes. The metrics include:
+                # Blob Transaction Data (Past 7 days) (6/10/24 THIS SECTION IS WIP):
+                * Fees Paid vs Slot Inclusion Rate
+                * Cumulative Weekly Fees
+                * Base Fee vs Priority Fee
 
-                Blob Fill Percentage: Indicates the percentage of the transaction space filled by blobs.
-                Transaction Resubmission Count: The number of times a transaction has been resubmitted with the same blobs.
-                Number of Blobs in a Transaction: The count of blobs contained within a single transaction.
-                ETH Priority Fees: The priority fees associated with each transaction in ETH.
-                Additional Metrics: Various other relevant metrics, such as fees and timings.
+                ## Fees Paid vs Slot Inclusion Rate Chart
+                Fees paid vs slot inclusion rate chart notes. The line chart shows the slot inclusion rate with respect to total transactionfees and base fee fluctuation
                 """
             ),
+            pn.pane.Markdown(
+                """
+                ## Cumulative Weekly Fees Chart
+                Cumulative Fees accrued weekly over time - the base fees and priority fees are separated
+                """
+            )
+        ),
+        pn.Row(
+            pn.Row(
+                fees_inclusion_rate_chart.opts(axiswise=True),
+            ),
+            pn.Row(fee_total_breakdown_line.opts(axiswise=True),)
+        ),
+
+        pn.Row(
             pn.Column(
                 pn.pane.Markdown("""
                                  #### **Bid Competitiveness**: the amount of priority fees being paid by the rollup compared to the block base fee.
@@ -176,13 +223,13 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             sequencers=multi_select.value,
         )
 
-        # I don't thnk this currently works right now
-        entire_panel[4][1].object = filtered_data_dict["slot_inclusion_df"].sort(by='slot_time').plot.scatter(
-            x='slot_time', y=['base_fee_per_gas', 'priority_fee_gas'], groupby='sequencer_names', s=1,
-            xlabel='datetime', ylabel='gas (gwei)', title='Base Fee vs Priority Fee (gwei)',
-            # need `slot_time` so that it doesn't share the same y-axis.
-            shared_axes=False
-        )
+        # # I don't thnk this currently works right now
+        # entire_panel[5][1].object = filtered_data_dict["slot_inclusion_df"].sort(by='slot_time').plot.scatter(
+        #     x='slot_time', y=['base_fee_per_gas', 'priority_fee_gas'], groupby='sequencer_names', s=1,
+        #     xlabel='datetime', ylabel='gas (gwei)', title='Base Fee vs Priority Fee (gwei)',
+        #     # need `slot_time` so that it doesn't share the same y-axis.
+        #     shared_axes=False
+        # )
 
     multi_select.param.watch(update_bar_chart, "value")
 
@@ -279,9 +326,9 @@ def create_priority_fee_chart(
         .plot.line(
             x="slot_inclusion_rate",
             y=["priority fee bid premium (%)"],
-            ylabel="priority fee bid premium (%, gwei)",
+            ylabel="priority fee as a percent of base fee (Gwei)",
             xlabel="slot inclusion rate",
-            title="priority fee bid premium over base fee",
+            title="priority fee bid as a percent of base fee",
             color="g",
             legend="top_left",
         )

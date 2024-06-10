@@ -100,8 +100,36 @@ def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFra
         .filter(pl.col("meta_network_name") == "mainnet")
         # adding filter because outliers mess up the graph
         .filter(pl.col("slot_inclusion_rate") < 200)
+        .select(
+            'versioned_hash',
+            'nonce',
+            'event_date_time_min',
+            'event_date_time_max',
+            'blob_hashes_length',
+            'blob_sidecars_size',
+            'fill_percentage',
+            'blob_gas',
+            'blob_gas_fee_cap',
+            'gas_price',
+            'gas_tip_cap',
+            'gas_fee_cap',
+            'hash',
+            'from',
+            'to',
+            'submission_count',
+            'slot',
+            'slot_time',
+            'block_root',
+            'kzg_commitment',
+            'meta_network_name',
+            'blob_size',
+            'blob_empty_size',
+            'beacon_inclusion_time',
+            'slot_inclusion_rate',
+            'slot_inclusion_rate_50_blob_avg',
+            '2_slot_target_inclusion_rate',
+        )
     )
-
 
 
 def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
@@ -173,7 +201,7 @@ def create_bid_premium_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     Groupby on slot inclusion rate to get median priority fee bid percent premium and mean effective gas price
     """
     slot_gas_bidding_df = create_slot_gas_bidding_df(cached_data)
-    
+
     return (slot_gas_bidding_df.group_by("slot_inclusion_rate")
             .agg(
         pl.col("priority_fee_bid_percent_premium").median(),
@@ -184,3 +212,45 @@ def create_bid_premium_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
         # adding filter because outliers mess up the graph
         .filter(pl.col("slot_inclusion_rate") < 50)
     )
+
+
+def create_blob_block_df(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Groupby on block number to get blob data per block.
+    """
+
+    return (df.drop_nulls().unique().group_by('block_number', 'sequencer_names').agg(
+        pl.col('slot_time').first(),
+        pl.col('extra_data').first(),
+        pl.col('base_tx_fee_eth').sum().alias('base_fees_per_block_eth'),
+        pl.col('priority_tx_fee_eth').sum().alias(
+            'priority_fees_per_block_eth'),
+        pl.col('total_tx_fee_eth').sum().alias('total_tx_fees_per_block_eth'),
+        pl.col('slot_inclusion_rate').mean().alias(
+            'avg_slot_inclusion_rate_per_block'),
+        pl.col('priority_fee_gas').mean().alias(
+            'avg_priority_fee_gas_per_block_gwei'),
+        pl.col('base_fee_per_gas').mean(),
+        pl.col('blob_hashes_length').sum().alias('blobs_per_block'),
+    ).sort(by='block_number'))
+
+def create_block_agg_df(blob_block_df: pl.DataFrame) -> pl.DataFrame:
+    """
+    makes an aggregation on top of `create_blob_block_df`
+    """
+    return blob_block_df.group_by('slot_time').agg(
+        pl.col('block_number').first().alias('block_number'),
+        pl.col('extra_data').first(),
+        pl.col('base_fees_per_block_eth').sum().alias(
+            'base_fees_per_block_eth'),
+        pl.col('priority_fees_per_block_eth').sum().alias(
+            'priority_fees_per_block_eth'),
+        pl.col('total_tx_fees_per_block_eth').sum().alias(
+            'total_tx_fees_per_block_eth'),
+        pl.col('avg_slot_inclusion_rate_per_block').mean().alias(
+            'avg_slot_inclusion_rate_per_block'),
+        pl.col('avg_priority_fee_gas_per_block_gwei').mean().alias(
+            'avg_priority_fee_gas_per_block_gwei'),
+        pl.col('base_fee_per_gas').mean(),
+        pl.col('blobs_per_block').sum().alias('blobs_per_block'),
+    ).sort(by='block_number')
