@@ -1,6 +1,6 @@
 [project]
 name = "eip4844-blob-data"
-version = "0.3.0"
+version = "0.4.0"
 description = "Dencun blob market analysis and dashboard"
 authors = [{ name = "Evan K", email = "ekcopersonal@gmail.com" }]
 dependencies = [
