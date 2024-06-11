@@ -158,10 +158,14 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
                 # Blob Transaction Data (Past 7 days)
                 Blob transactions have three primary costs - the base block fee, the base blob fee, and the base. At the time of writing (June 2024),
                 since the blob base fee remains at 0, the dashboard focuses only on the base fee and priority fee components. The chart
-                **"Fees Paid vs Slot Inclusion Rate"** shows the fluctuation of the base fees over time and how the slot inclusion rates are affected.
-                The average slot inclusion rate can be seen in the table below. The other chart **"Cumulative Fees (weekly)"** shows the total fees
-                accured over a weekly timeframe broken down between the base fee and the priority fee. Once the blob base fee
+                ## **Fees Paid vs Slot Inclusion Rate** 
+                Shows the fluctuation of the base fees over time and how the slot inclusion rates are affected.
+                The average slot inclusion rate can be seen in the table below. 
+                ## **Base Fee vs Priority Fee (gwei)** 
+                Shows the total fees accured over a weekly timeframe broken down between the base fee and the priority fee. Once the blob base fee
                 becomes non-trivial, an additional line will be updated in the chart.
+                ## **Cumulative Fees (weekly)** 
+                Fee market chart - shows fees accumulated in the past 7 days. 
                 """
             ),
             pn.Row(
@@ -177,19 +181,12 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             pn.Row(fee_total_breakdown_line.opts(
                 axiswise=True, width=600, height=375))
         ),
-
-        # pn.Row(
-        #     pn.Column(
-        #         pn.pane.Markdown("""
-        #                          #### **Bid Competitiveness**: the amount of priority fees being paid by the rollup compared to the block base fee.
-        #                          """
-        #                          ),
-        #         fee_breakdown_line_chart.opts(axiswise=True),
-        #         styles=dict(background="WhiteSmoke")
-        #     ),
-        #     styles=dict(background="WhiteSmoke"),
-        # ),
-        pn.Row(
+        pn.Column(
+            pn.pane.Markdown(
+                """
+                # **Rollup Blob Inclusion Rate and Fees Table**
+                # """
+            ),
             pn.widgets.Tabulator(
                 sequencer_macro_blob_table.to_pandas(), layout='fit_data'
             ),
