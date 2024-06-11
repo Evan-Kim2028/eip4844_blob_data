@@ -1,3 +1,4 @@
+import holoviews as hv
 import polars as pl
 import panel as pn
 from eip4844_blob_data.polars_preprocess import create_blob_block_df, create_block_agg_df
@@ -48,7 +49,7 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
                                                color='g', alpha=0.75, ylabel='base fee per gas', line_width=2, line_dash='dotted')
     fees_inclusion_rate_chart = (
         (fees_paid_line * slot_inclusion_rate_scatter * base_gas_fee_line).opts(
-            multi_y=True, show_legend=True, height=375, width=1200, xlabel='time', title='Fees Paid vs Slot Inclusion Rate')
+            multi_y=True, show_legend=True, xlabel='time', title='Fees Paid vs Slot Inclusion Rate')
     )
 
     # ! TODO - replace!
@@ -107,7 +108,7 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
 
             ## About
             This dashboard shows detailed analytics for blob inclusion rates as well as the efficiency of using EIP-1559 priority fees
-            as a bidding mechanism for faster slot inclusion. This dashboard is made using [Xatu Data](https://github.com/ethpandaops/xatu-data?tab=readme-ov-file) for EL mempool and Beacon chain data and [Hypersync](https://github.com/enviodev/hypersync-client-python) 
+            as a bidding mechanism for faster slot inclusion. This dashboard is made using [Xatu Data](https://github.com/ethpandaops/xatu-data?tab=readme-ov-file) for EL mempool and Beacon chain data and [Hypersync](https://github.com/enviodev/hypersync-client-python)
             for transaction gas data for the [EIP-4844 data challenge](https://esp.ethereum.foundation/data-challenge-4844).
             """
             ),
@@ -118,28 +119,28 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
             pn.pane.Markdown(
                 """
             ## 7 Day Historical Slot Inclusion
-            When a transaction is resubmitted with updated gas parameters, the transaction hash changes. For example take this blob reference hash - 0x01c738cf37c911334c771f2295c060e5bd7d084f347e4334863336724934c59a. 
-            On [etherscan](https://etherscan.io/tx/0x763d823c0f933c4d2eb84406b37aa2649753f2f563fa3ee6d27251c6a52a8d69) we can see that the transaction was replaced by the user. We can see on Ethernow that the transaction contains 
+            When a transaction is resubmitted with updated gas parameters, the transaction hash changes. For example take this blob reference hash - 0x01c738cf37c911334c771f2295c060e5bd7d084f347e4334863336724934c59a.
+            On [etherscan](https://etherscan.io/tx/0x763d823c0f933c4d2eb84406b37aa2649753f2f563fa3ee6d27251c6a52a8d69) we can see that the transaction was replaced by the user. We can see on Ethernow that the transaction contains
             the same blob reference hash in both the [original tx](https://www.ethernow.xyz/tx/0x763d823c0f933c4d2eb84406b37aa2649753f2f563fa3ee6d27251c6a52a8d69?batchIndex=1) and the [resubmitted tx](https://www.ethernow.xyz/tx/0x5a4094662bd05ff3639a8979927ab527e007a6925387951a9c1b3d2958b13a86?batchIndex=1).
-            
-            We can measure the total time that a blob hash sat in the mempool by subtracting the original tx was first seen from the slot time, when it eventually is finalized on the beacon chain. 
+
+            We can measure the total time that a blob hash sat in the mempool by subtracting the original tx was first seen from the slot time, when it eventually is finalized on the beacon chain.
             In this particular example, the total time that the blob sat in the mempool was not from 18:56:27 to 18:57:11 (4 slots), but really 18:54:29 to 18:57:11 (14 slots)
 
-            **Slot Inclusion Rate** - The slot inclusion rate indicates the number of slots required for a blob to be included in the beacon chain, 
-            with a higher rate signifying a longer inclusion time. The accompanying time-series chart tracks this metric from initial mempool 
-            appearance to final beacon block inclusion. A 50 blob slot inclusion average is taken to smooth out the performance. 
-            The target slot inclusion rate is 2. 
+            **Slot Inclusion Rate** - The slot inclusion rate indicates the number of slots required for a blob to be included in the beacon chain,
+            with a higher rate signifying a longer inclusion time. The accompanying time-series chart tracks this metric from initial mempool
+            appearance to final beacon block inclusion. A 50 blob slot inclusion average is taken to smooth out the performance.
+            The target slot inclusion rate is 2.
             """
             ),
             pn.pane.Markdown(
                 """
             ## EIP-1559 Priority fee proportion to base fee
             The scatterplot illustrates the relationship between the EIP-1559 priority fee bid premiums and slot inclusion rates. The scatterplot points
-            are individual blob bid datapoints and the line is a median bid premium. A higher priority fee bid premium tends to coincide 
-            with longer slot inclusion times. This unexpected twist underscores the value of efficient slot utilization. The data indicates a trend 
-            where higher bid premiums are associated with longer slot inclusion times, suggesting that as the time for a blob to be included 
-            in the beacon chain increases, so does the priority fee bid premium. This behavior comes from the fact that if a blob sits in the 
-            mempool for too long, then it is resubmitted with a higher priority fee. 
+            are individual blob bid datapoints and the line is a median bid premium. A higher priority fee bid premium tends to coincide
+            with longer slot inclusion times. This unexpected twist underscores the value of efficient slot utilization. The data indicates a trend
+            where higher bid premiums are associated with longer slot inclusion times, suggesting that as the time for a blob to be included
+            in the beacon chain increases, so does the priority fee bid premium. This behavior comes from the fact that if a blob sits in the
+            mempool for too long, then it is resubmitted with a higher priority fee.
             """
             ),
             styles=dict(background="WhiteSmoke")
@@ -154,40 +155,40 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
         pn.Row(
             pn.pane.Markdown(
                 """
-                # Blob Transaction Data (Past 7 days) (6/10/24 THIS SECTION IS WIP):
-                * Fees Paid vs Slot Inclusion Rate
-                * Cumulative Weekly Fees
-                * Base Fee vs Priority Fee
-
-                ## Fees Paid vs Slot Inclusion Rate Chart
-                Fees paid vs slot inclusion rate chart notes. The line chart shows the slot inclusion rate with respect to total transactionfees and base fee fluctuation
+                # Blob Transaction Data (Past 7 days)
+                Blob transactions have three primary costs - the base block fee, the base blob fee, and the base. At the time of writing (June 2024),
+                since the blob base fee remains at 0, the dashboard focuses only on the base fee and priority fee components. The chart
+                **"Fees Paid vs Slot Inclusion Rate"** shows the fluctuation of the base fees over time and how the slot inclusion rates are affected.
+                The average slot inclusion rate can be seen in the table below. The other chart **"Cumulative Fees (weekly)"** shows the total fees
+                accured over a weekly timeframe broken down between the base fee and the priority fee. Once the blob base fee
+                becomes non-trivial, an additional line will be updated in the chart.
                 """
             ),
-            pn.pane.Markdown(
-                """
-                ## Cumulative Weekly Fees Chart
-                Cumulative Fees accrued weekly over time - the base fees and priority fees are separated
-                """
+            pn.Row(
+                fee_breakdown_line_chart.opts(
+                    axiswise=True, width=600, height=375)
             )
         ),
         pn.Row(
             pn.Row(
-                fees_inclusion_rate_chart.opts(axiswise=True),
+                fees_inclusion_rate_chart.opts(
+                    axiswise=True, width=1050, height=375),
             ),
-            pn.Row(fee_total_breakdown_line.opts(axiswise=True),)
+            pn.Row(fee_total_breakdown_line.opts(
+                axiswise=True, width=600, height=375))
         ),
 
-        pn.Row(
-            pn.Column(
-                pn.pane.Markdown("""
-                                 #### **Bid Competitiveness**: the amount of priority fees being paid by the rollup compared to the block base fee.
-                                 """
-                                 ),
-                fee_breakdown_line_chart.opts(axiswise=True),
-                styles=dict(background="WhiteSmoke")
-            ),
-            styles=dict(background="WhiteSmoke"),
-        ),
+        # pn.Row(
+        #     pn.Column(
+        #         pn.pane.Markdown("""
+        #                          #### **Bid Competitiveness**: the amount of priority fees being paid by the rollup compared to the block base fee.
+        #                          """
+        #                          ),
+        #         fee_breakdown_line_chart.opts(axiswise=True),
+        #         styles=dict(background="WhiteSmoke")
+        #     ),
+        #     styles=dict(background="WhiteSmoke"),
+        # ),
         pn.Row(
             pn.widgets.Tabulator(
                 sequencer_macro_blob_table.to_pandas(), layout='fit_data'
