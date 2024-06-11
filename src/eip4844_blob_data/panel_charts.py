@@ -176,7 +176,7 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
         pn.Row(
             pn.Row(
                 fees_inclusion_rate_chart.opts(
-                    axiswise=True, width=1200, height=375),
+                    axiswise=True, width=1050, height=375),
             ),
             pn.Row(fee_total_breakdown_line.opts(
                 axiswise=True, width=600, height=375))
