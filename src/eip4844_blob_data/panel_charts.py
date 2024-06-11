@@ -35,9 +35,9 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
 
     # NEW - 2 DF TRANSFORMATIONS + 2 CHARTS ADDED 6/10/24. TODO - REFACTOR OUT?
     blob_block_df: pl.DataFrame = create_blob_block_df(
-        filtered_data_dict["slot_inclusion_df"])
+        filtered_data_dict["slot_inclusion_df"]).sort(by='slot_time')
 
-    block_agg_df = create_block_agg_df(blob_block_df)
+    block_agg_df = create_block_agg_df(blob_block_df).sort(by='slot_time')
 
     # stacked line chart
     fees_paid_line = block_agg_df.plot.line(
@@ -348,7 +348,7 @@ def fee_breakdown_line(df: pl.DataFrame, sequencers: list[str]):
 
 
 def get_slot_inclusion_table(df: pl.DataFrame, sequencers: list[str]):
-    slot_df = (df.filter(pl.col("sequencer_names").is_in(sequencers)).sort(
+    slot_df = (df.filter(pl.col("sequencer_names").is_in(sequencers)).drop_nulls().sort(
         by='slot_inclusion_rate', descending=True)
     )
     return pn.widgets.Tabulator(
