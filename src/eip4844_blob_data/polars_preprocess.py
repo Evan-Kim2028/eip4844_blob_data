@@ -1,6 +1,16 @@
 import polars as pl
 
 
+def hex_to_readable_string(hex_str):
+    """
+    Function to convert hex string to a readable string using 'latin-1'
+    """
+    try:
+        return bytes.fromhex(hex_str[2:]).decode('latin-1')
+    except Exception as e:
+        return str(e)
+
+
 def create_slot_inclusion_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataFrame:
     """
     `slot_inclusion` returns the slot, slot inclusion time, and slot start time for the last `time` days.
@@ -171,9 +181,30 @@ def create_slot_gas_bidding_df(cached_data: dict[str, pl.DataFrame]) -> pl.DataF
             (pl.col("base_tx_fee_eth") + \
              pl.col("priority_tx_fee_eth")).alias("total_tx_fee_eth"),
         )
+        # label builder data
+        .with_columns(pl.col('extra_data').map_elements(hex_to_readable_string, return_dtype=pl.Utf8).alias('builder_label'))
+        .with_columns(
+            pl.when(pl.col("builder_label").str.contains("geth"))
+            .then(pl.lit("vanilla_builder_geth"))
+            .otherwise(pl.col("builder_label"))
+            .alias("builder_label")
+        )
+        .with_columns(
+            pl.when(pl.col("builder_label").str.contains("reth"))
+            .then(pl.lit("vanilla_builder_reth"))
+            .otherwise(pl.col("builder_label"))
+            .alias("builder_label")
+        )
+        .with_columns(
+            pl.when(pl.col("builder_label").str.contains("rsync"))
+            .then(pl.lit("rsync_builder"))
+            .otherwise(pl.col("builder_label"))
+            .alias("builder_label")
+        )
         .select(
             "block_number",
             "extra_data",
+            "builder_label",
             "base_tx_fee_eth",
             "priority_tx_fee_eth",
             "total_tx_fee_eth",
@@ -233,6 +264,7 @@ def create_blob_block_df(df: pl.DataFrame) -> pl.DataFrame:
         pl.col('base_fee_per_gas').mean(),
         pl.col('blob_hashes_length').sum().alias('blobs_per_block'),
     ).sort(by='block_number'))
+
 
 def create_block_agg_df(blob_block_df: pl.DataFrame) -> pl.DataFrame:
     """

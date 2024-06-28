@@ -104,12 +104,15 @@ def start_interactive_panel(filtered_data_dict, sequencer_names_list):
         pn.Row(
             pn.pane.Markdown(
                 """
-            # EIP-4844 Slot Inclusion Dashboard
+            # EIP-4844 Blob Inclusion Dashboard (7 days)
 
             ## About
             This dashboard shows detailed analytics for blob inclusion rates as well as the efficiency of using EIP-1559 priority fees
             as a bidding mechanism for faster slot inclusion. This dashboard is made using [Xatu Data](https://github.com/ethpandaops/xatu-data?tab=readme-ov-file) for EL mempool and Beacon chain data and [Hypersync](https://github.com/enviodev/hypersync-client-python)
             for transaction gas data for the [EIP-4844 data challenge](https://esp.ethereum.foundation/data-challenge-4844).
+
+            The dashboard currently shows the past 7 days worth of data. Data for a longer time frame is available on request. Just reach out to
+            @evandekim on telegram or twitter.
             """
             ),
             multi_select,
